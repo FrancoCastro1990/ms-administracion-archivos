@@ -21,7 +21,7 @@ public class AwsConfig {
 	@Value("${spring.cloud.aws.credentials.session-token}")
 	private String sessionToken;
 
-	@Value("${spring.cloud.aws.region.static}")
+	@Value("${spring.cloud.aws.region}")
 	private String region;
 
 	@Bean
