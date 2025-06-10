@@ -25,7 +25,7 @@ public class AwsS3Controller {
 
 	private final AwsS3Service awsS3Service;
 
-	// Listar objetos en un bucket
+	// Listar objetos en un bucket.
 	@GetMapping("/{bucket}/objects")
 	public ResponseEntity<List<S3ObjectDto>> listObjects(@PathVariable String bucket) {
 
