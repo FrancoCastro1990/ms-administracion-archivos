@@ -60,5 +60,5 @@ jobs:
             # Parar y eliminar cualquier contenedor previo
             docker stop my-app || true && docker rm my-app || true
             # Iniciar el contenedor
-            docker run -d --name my-app -p 8080:8080 -e spring.cloud.aws.region.static=us-east-1 -e spring.cloud.aws.credentials.access-key=${{ secrets.AWS_ACCESS_KEY_ID }} -e spring.cloud.aws.credentials.secret-key=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e spring.cloud.aws.credentials.session-token=${{ secrets.AWS_SESSION_TOKEN }} ${{ secrets.DOCKERHUB_USERNAME }}/my-app:latest
+            docker run -d --name my-app -v /mnt/efs:/app/efs -p 8080:8080 -e spring.cloud.aws.region.static=us-east-1 -e spring.cloud.aws.credentials.access-key=${{ secrets.AWS_ACCESS_KEY_ID }} -e spring.cloud.aws.credentials.secret-key=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e spring.cloud.aws.credentials.session-token=${{ secrets.AWS_SESSION_TOKEN }} ${{ secrets.DOCKERHUB_USERNAME }}/my-app:latest
           EOF

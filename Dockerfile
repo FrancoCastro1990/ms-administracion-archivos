@@ -14,4 +14,6 @@ COPY --from=buildstage /app/target/ms-administracion-archivos-0.0.1-SNAPSHOT.jar
 
 EXPOSE 8080
 
+RUN mkdir -p /app/efs
+
 CMD ["java", "-jar", "/app/app.jar"]

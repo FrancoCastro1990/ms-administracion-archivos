@@ -25,7 +25,7 @@ public class AwsS3Controller {
 
 	private final AwsS3Service awsS3Service;
 
-	// Listar objetos en un bucket.
+	// Listar objetos en un bucket
 	@GetMapping("/{bucket}/objects")
 	public ResponseEntity<List<S3ObjectDto>> listObjects(@PathVariable String bucket) {
 
@@ -34,24 +34,24 @@ public class AwsS3Controller {
 	}
 
 	// Obtener objeto como stream
-	@GetMapping("/{bucket}/object/stream/{key}")
-	public ResponseEntity<byte[]> getObjectAsStream(@PathVariable String bucket, @PathVariable String key) {
+	@GetMapping("/{bucket}/object/stream")
+	public ResponseEntity<byte[]> getObjectAsStream(@PathVariable String bucket, @RequestParam String key) {
 		byte[] fileBytes = awsS3Service.downloadAsBytes(bucket, key);
 		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + key)
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(fileBytes);
 	}
 
 	// Descargar archivo como byte[]
-	@GetMapping("/{bucket}/object/{key}")
-	public ResponseEntity<byte[]> downloadObject(@PathVariable String bucket, @PathVariable String key) {
+	@GetMapping("/{bucket}/object")
+	public ResponseEntity<byte[]> downloadObject(@PathVariable String bucket, @RequestParam String key) {
 		byte[] fileBytes = awsS3Service.downloadAsBytes(bucket, key);
 		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + key)
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(fileBytes);
 	}
 
 	// Subir archivo
-	@PostMapping("/{bucket}/object/{key}")
-	public ResponseEntity<Void> uploadObject(@PathVariable String bucket, @PathVariable String key,
+	@PostMapping("/{bucket}/object")
+	public ResponseEntity<Void> uploadObject(@PathVariable String bucket, @RequestParam String key,
 			@RequestParam("file") MultipartFile file) {
 
 		awsS3Service.upload(bucket, key, file);
@@ -67,8 +67,8 @@ public class AwsS3Controller {
 	}
 
 	// Borrar objeto
-	@DeleteMapping("/{bucket}/object/{key}")
-	public ResponseEntity<Void> deleteObject(@PathVariable String bucket, @PathVariable String key) {
+	@DeleteMapping("/{bucket}/object")
+	public ResponseEntity<Void> deleteObject(@PathVariable String bucket, @RequestParam String key) {
 		awsS3Service.deleteObject(bucket, key);
 		return ResponseEntity.noContent().build();
 	}
