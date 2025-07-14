@@ -58,7 +58,7 @@ public class AwsS3Controller {
 		return ResponseEntity.ok().build();
 	}
 
-	// Mover objeto dentro del mismo bucket
+	//Mover objeto dentro del mismo bucket
 	@PostMapping("/{bucket}/move")
 	public ResponseEntity<Void> moveObject(@PathVariable String bucket, @RequestParam String sourceKey,
 			@RequestParam String destKey) {
@@ -66,7 +66,7 @@ public class AwsS3Controller {
 		return ResponseEntity.ok().build();
 	}
 
-	// Borrar objeto
+	//Borrar objeto
 	@DeleteMapping("/{bucket}/object")
 	public ResponseEntity<Void> deleteObject(@PathVariable String bucket, @RequestParam String key) {
 		awsS3Service.deleteObject(bucket, key);
