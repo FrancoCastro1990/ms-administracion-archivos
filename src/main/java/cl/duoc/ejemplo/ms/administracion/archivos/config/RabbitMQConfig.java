@@ -31,13 +31,11 @@ public class RabbitMQConfig {
 	@Value("${RABBITMQ_PASS:guest}")
 	private String rabbitPass;
 
-	public static final String MAIN_QUEUE = "myQueue";
+	public static final String FACTURA_QUEUE = "facturaQueue";
 	public static final String DLX_QUEUE = "dlx-queue";
-	public static final String MAIN_EXCHANGE = "myExchange";
+	public static final String FACTURA_EXCHANGE = "facturaExchange";
 	public static final String DLX_EXCHANGE = "dlx-exchange";
 	public static final String DLX_ROUTING_KEY = "dlx-routing-key";
-	public static final String BOLETA_QUEUE = "boletaQueue";
-	public static final String BOLETA_DLQ = "boletaDLQ";
 
 
 	@Bean
@@ -70,9 +68,8 @@ public class RabbitMQConfig {
 
 
 	@Bean
-	Queue myQueue() {
-
-		return new Queue(MAIN_QUEUE, true, false, false,
+	Queue facturaQueue() {
+		return new Queue(FACTURA_QUEUE, true, false, false,
 				Map.of("x-dead-letter-exchange", DLX_EXCHANGE, "x-dead-letter-routing-key", DLX_ROUTING_KEY));
 	}
 
@@ -83,20 +80,8 @@ public class RabbitMQConfig {
 	}
 
 	@Bean
-	Queue boletaDLQ() {
-		return new Queue(BOLETA_DLQ, true);
-	}
-
-	@Bean
-	Queue boletaQueue() {
-		return new Queue(BOLETA_QUEUE, true, false, false,
-				Map.of("x-dead-letter-exchange", "", "x-dead-letter-routing-key", BOLETA_DLQ));
-	}
-
-	@Bean
-	DirectExchange myExchange() {
-
-		return new DirectExchange(MAIN_EXCHANGE);
+	DirectExchange facturaExchange() {
+		return new DirectExchange(FACTURA_EXCHANGE);
 	}
 
 	@Bean
@@ -106,9 +91,8 @@ public class RabbitMQConfig {
 	}
 
 	@Bean
-	Binding binding(Queue myQueue, DirectExchange myExchange) {
-
-		return BindingBuilder.bind(myQueue).to(myExchange).with("");
+	Binding binding(Queue facturaQueue, DirectExchange facturaExchange) {
+		return BindingBuilder.bind(facturaQueue).to(facturaExchange).with("");
 	}
 
 	@Bean
