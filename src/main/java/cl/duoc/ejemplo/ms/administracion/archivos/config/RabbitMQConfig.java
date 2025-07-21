@@ -12,6 +12,11 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import org.springframework.beans.factory.annotation.Value;
 
 
@@ -40,11 +45,13 @@ public class RabbitMQConfig {
 
 
 	@Bean
-	Jackson2JsonMessageConverter messageConverter() {
-
-		return new Jackson2JsonMessageConverter();
+	public Jackson2JsonMessageConverter messageConverter() {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		return new Jackson2JsonMessageConverter(mapper);
 	}
-
+	
 	@Bean
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, Jackson2JsonMessageConverter messageConverter) {
 		RabbitTemplate template = new RabbitTemplate(connectionFactory);
@@ -63,13 +70,13 @@ public class RabbitMQConfig {
 	}
 
 	@Bean
-	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory, Jackson2JsonMessageConverter messageConverter) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
+		factory.setMessageConverter(messageConverter);
 		factory.setDefaultRequeueRejected(false);
 		factory.setErrorHandler(error -> {
 			System.err.println("Error en el consumidor: " + error.getMessage());
-			// Aquí podrías enviar a DLQ o manejar el error de otra forma
 		});
 		return factory;
 	}

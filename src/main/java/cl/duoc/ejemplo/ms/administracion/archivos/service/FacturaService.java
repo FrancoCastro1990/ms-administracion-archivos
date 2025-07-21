@@ -1,5 +1,6 @@
 package cl.duoc.ejemplo.ms.administracion.archivos.service;
 
+import cl.duoc.ejemplo.ms.administracion.archivos.config.RabbitMQConfig;
 import cl.duoc.ejemplo.ms.administracion.archivos.dto.FacturaDto;
 import cl.duoc.ejemplo.ms.administracion.archivos.model.Factura;
 import cl.duoc.ejemplo.ms.administracion.archivos.repository.FacturaRepository;
@@ -30,8 +31,8 @@ public class FacturaService {
     private String bucketName;
 
     public void crearFactura(FacturaDto factura) {
-    System.out.println("[Service] Enviando a cola: " + factura);
-    rabbitTemplate.convertAndSend("facturaQueue", factura);
+        System.out.println("[Service] Enviando a cola: " + factura);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.FACTURA_EXCHANGE, "", factura);
     }
 
     public Optional<Factura> obtenerFactura(Long id) {
