@@ -21,13 +21,13 @@ import com.itextpdf.text.pdf.PdfWriter;
 @RequiredArgsConstructor
 public class FacturaConsumer {
     private final FacturaRepository facturaRepository;
-    private final RabbitTemplate rabbitTemplate;
+    //private final RabbitTemplate rabbitTemplate;
 
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
     @RabbitListener(queues = "facturaQueue")
-    public void consumeFactura(FacturaDto factura) {
+    public void consumeFactura(FacturaDto factura) throws Exception {
         System.out.println("[Consumer] Mensaje recibido: " + factura);
         try {
             String clienteId = factura.getClienteId();
@@ -45,7 +45,6 @@ public class FacturaConsumer {
             facturaModelo.setDescripcion(factura.getDescripcion());
             facturaModelo.setMonto(factura.getMonto());
             facturaModelo.setNombreArchivo(nombreArchivo);
-            facturaRepository.save(facturaModelo);
 
             Document document = new Document();
             PdfWriter.getInstance(document, new FileOutputStream(rutaLocal.toFile()));
@@ -58,7 +57,11 @@ public class FacturaConsumer {
 
             facturaRepository.save(facturaModelo);
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend("facturaDLQ", factura);
+            System.err.println("[Consumer] Error al procesar la factura: " + e.getMessage());
+            e.printStackTrace();
+            // Enviar a la cola de errores (DLQ)
+            throw e;
+            //rabbitTemplate.convertAndSend("facturaDLQ", factura);
         }
     }
 }
