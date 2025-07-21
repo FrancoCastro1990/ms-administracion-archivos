@@ -28,6 +28,7 @@ public class FacturaController {
         factura.setDescripcion(facturaDto.getDescripcion());
         factura.setMonto(facturaDto.getMonto());
         factura.setNombreArchivo(facturaDto.getNombreArchivo());
+        System.out.println("[Controller] Recibido DTO: " + facturaDto);
         facturaService.crearFactura(factura);
         return ResponseEntity.ok("Factura creada y enviada a la cola");
     }

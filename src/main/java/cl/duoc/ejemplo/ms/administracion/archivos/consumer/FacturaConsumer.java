@@ -28,6 +28,7 @@ public class FacturaConsumer {
 
     @RabbitListener(queues = "facturaQueue")
     public void consumeFactura(FacturaDto factura) {
+        System.out.println("[Consumer] Mensaje recibido: " + factura);
         try {
             String clienteId = factura.getClienteId();
             String fechaFolder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));

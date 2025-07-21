@@ -30,7 +30,8 @@ public class FacturaService {
     private String bucketName;
 
     public void crearFactura(FacturaDto factura) {
-        rabbitTemplate.convertAndSend("facturaQueue", factura);
+    System.out.println("[Service] Enviando a cola: " + factura);
+    rabbitTemplate.convertAndSend("facturaQueue", factura);
     }
 
     public Optional<Factura> obtenerFactura(Long id) {
