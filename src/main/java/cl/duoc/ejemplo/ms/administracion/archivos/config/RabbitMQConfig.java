@@ -11,12 +11,25 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 
 
 
 @Configuration
 
 public class RabbitMQConfig {
+
+	@Value("${RABBITMQ_HOST:localhost}")
+	private String rabbitHost;
+
+	@Value("${RABBITMQ_PORT:5672}")
+	private int rabbitPort;
+
+	@Value("${RABBITMQ_USER:guest}")
+	private String rabbitUser;
+
+	@Value("${RABBITMQ_PASS:guest}")
+	private String rabbitPass;
 
 	public static final String MAIN_QUEUE = "myQueue";
 	public static final String DLX_QUEUE = "dlx-queue";
@@ -35,12 +48,11 @@ public class RabbitMQConfig {
 
 	@Bean
 	CachingConnectionFactory connectionFactory() {
-
 		CachingConnectionFactory factory = new CachingConnectionFactory();
-		factory.setHost("localhost");
-		factory.setPort(5672);
-		factory.setUsername("guest");
-		factory.setPassword("guest");
+		factory.setHost(rabbitHost);
+		factory.setPort(rabbitPort);
+		factory.setUsername(rabbitUser);
+		factory.setPassword(rabbitPass);
 		return factory;
 	}
 
