@@ -5,7 +5,8 @@ import cl.duoc.ejemplo.ms.administracion.archivos.repository.FacturaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,11 +23,13 @@ public class FacturaService {
     private final FacturaRepository facturaRepository;
     private final AwsS3Service awsS3Service;
 
+    private final RabbitTemplate rabbitTemplate;
+
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
-    public Factura crearFactura(Factura factura) {
-        return facturaRepository.save(factura);
+    public void crearFactura(Factura factura) {
+        rabbitTemplate.convertAndSend("facturaQueue", factura);
     }
 
     public Optional<Factura> obtenerFactura(Long id) {
@@ -45,22 +48,20 @@ public class FacturaService {
         facturaRepository.deleteById(id);
     }
 
-    public void subirYGuardarFactura(Long id, MultipartFile archivo) throws IOException {
+    public void subirFactura(Long id) throws IOException {
         Factura factura = facturaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Factura no encontrada con ID: " + id));
 
         String clienteId = factura.getClienteId();
         String fechaFolder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
-        String nombreArchivo = archivo.getOriginalFilename();
+        String nombreArchivo = factura.getNombreArchivo();
         String rutaRelativa = clienteId + "/" + fechaFolder + "/" + nombreArchivo;
 
         Path rutaLocal = Path.of("/mnt/efs", rutaRelativa);
-        Files.createDirectories(rutaLocal.getParent());
-        archivo.transferTo(rutaLocal.toFile());
+        if (!Files.exists(rutaLocal)) {
+            throw new IOException("El archivo PDF de la factura no existe en la ruta esperada: " + rutaLocal);
+        }
 
         awsS3Service.uploadFromPath(bucketName, rutaRelativa, rutaLocal);
-
-        factura.setNombreArchivo(nombreArchivo);
-        facturaRepository.save(factura);
     }
 }

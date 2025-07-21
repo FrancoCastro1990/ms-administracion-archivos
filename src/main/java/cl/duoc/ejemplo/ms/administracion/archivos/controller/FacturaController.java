@@ -5,7 +5,6 @@ import cl.duoc.ejemplo.ms.administracion.archivos.model.Factura;
 import cl.duoc.ejemplo.ms.administracion.archivos.service.FacturaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,8 +28,8 @@ public class FacturaController {
         factura.setDescripcion(facturaDto.getDescripcion());
         factura.setMonto(facturaDto.getMonto());
         factura.setNombreArchivo(facturaDto.getNombreArchivo());
-
-        return ResponseEntity.ok(facturaService.crearFactura(factura));
+        facturaService.crearFactura(factura);
+        return ResponseEntity.ok(factura);
     }
 
     @GetMapping("/{id}")
@@ -66,9 +65,8 @@ public class FacturaController {
     }
 
     @PostMapping("/{id}/upload")
-    public ResponseEntity<String> subirFactura(@PathVariable Long id,
-                                               @RequestParam("archivo") MultipartFile archivo) throws IOException {
-        facturaService.subirYGuardarFactura(id, archivo);
-        return ResponseEntity.ok("Archivo subido correctamente");
+    public ResponseEntity<String> subirFactura(@PathVariable Long id) throws IOException {
+        facturaService.subirFactura(id);
+        return ResponseEntity.ok("Archivo subido correctamente a S3");
     }
 }
