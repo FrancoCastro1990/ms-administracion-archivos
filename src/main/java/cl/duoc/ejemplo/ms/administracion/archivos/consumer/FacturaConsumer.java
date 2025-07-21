@@ -1,5 +1,6 @@
 package cl.duoc.ejemplo.ms.administracion.archivos.consumer;
 
+import cl.duoc.ejemplo.ms.administracion.archivos.dto.FacturaDto;
 import cl.duoc.ejemplo.ms.administracion.archivos.model.Factura;
 import cl.duoc.ejemplo.ms.administracion.archivos.repository.FacturaRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class FacturaConsumer {
     private String bucketName;
 
     @RabbitListener(queues = "facturaQueue")
-    public void consumeFactura(Factura factura) {
+    public void consumeFactura(FacturaDto factura) {
         try {
             String clienteId = factura.getClienteId();
             String fechaFolder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
@@ -36,17 +37,25 @@ public class FacturaConsumer {
             Path rutaLocal = Path.of("/mnt/efs", rutaRelativa);
             Files.createDirectories(rutaLocal.getParent());
 
+
+            Factura facturaModelo = new Factura();
+            facturaModelo.setClienteId(factura.getClienteId());
+            facturaModelo.setFechaEmision(factura.getFechaEmision());
+            facturaModelo.setDescripcion(factura.getDescripcion());
+            facturaModelo.setMonto(factura.getMonto());
+            facturaModelo.setNombreArchivo(nombreArchivo);
+            facturaRepository.save(facturaModelo);
+
             Document document = new Document();
             PdfWriter.getInstance(document, new FileOutputStream(rutaLocal.toFile()));
             document.open();
-            document.add(new Paragraph("Factura ID: " + factura.getId()));
-            document.add(new Paragraph("Cliente ID: " + factura.getClienteId()));
-            document.add(new Paragraph("Monto: " + factura.getMonto()));
-            document.add(new Paragraph("Fecha emisión: " + factura.getFechaEmision()));
+            document.add(new Paragraph("Factura ID: " + facturaModelo.getId()));
+            document.add(new Paragraph("Cliente ID: " + facturaModelo.getClienteId()));
+            document.add(new Paragraph("Monto: " + facturaModelo.getMonto()));
+            document.add(new Paragraph("Fecha emisión: " + facturaModelo.getFechaEmision()));
             document.close();
 
-            factura.setNombreArchivo(nombreArchivo);
-            facturaRepository.save(factura);
+            facturaRepository.save(facturaModelo);
         } catch (Exception e) {
             rabbitTemplate.convertAndSend("facturaDLQ", factura);
         }

@@ -22,7 +22,7 @@ public class FacturaController {
 
     @PostMapping
     public ResponseEntity<String> crearFactura(@RequestBody FacturaDto facturaDto) {
-        Factura factura = new Factura();
+        FacturaDto factura = new FacturaDto();
         factura.setClienteId(facturaDto.getClienteId());
         factura.setFechaEmision(facturaDto.getFechaEmision());
         factura.setDescripcion(facturaDto.getDescripcion());

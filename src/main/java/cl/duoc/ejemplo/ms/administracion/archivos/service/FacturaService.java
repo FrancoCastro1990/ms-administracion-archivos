@@ -1,5 +1,6 @@
 package cl.duoc.ejemplo.ms.administracion.archivos.service;
 
+import cl.duoc.ejemplo.ms.administracion.archivos.dto.FacturaDto;
 import cl.duoc.ejemplo.ms.administracion.archivos.model.Factura;
 import cl.duoc.ejemplo.ms.administracion.archivos.repository.FacturaRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class FacturaService {
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
-    public void crearFactura(Factura factura) {
+    public void crearFactura(FacturaDto factura) {
         rabbitTemplate.convertAndSend("facturaQueue", factura);
     }
 
