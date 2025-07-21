@@ -1,22 +1,5 @@
 version: '3.8'
 services:
-  app:
-    image: ${DOCKERHUB_IMAGE}
-    ports:
-      - "8080:8080"
-    volumes:
-      - /mnt/efs:/app/efs
-    environment:
-      SPRING_CLOUD_AWS_REGION_STATIC: ${AWS_REGION}
-      SPRING_CLOUD_AWS_CREDENTIALS_ACCESS_KEY: ${AWS_ACCESS_KEY_ID}
-      SPRING_CLOUD_AWS_CREDENTIALS_SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
-      SPRING_CLOUD_AWS_CREDENTIALS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
-    depends_on:
-      - rabbitmq1
-      - rabbitmq2
-    networks:
-      - rabbitmq
-
   rabbitmq1:
     image: rabbitmq:3-management
     hostname: rabbitmq1

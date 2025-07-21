@@ -49,18 +49,19 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
 
-      # Paso 6: Conectarse a EC2 y desplegar el stack con docker-compose
+      # Paso 6: Conectarse a EC2 y desplegar el contenedor
       - name: SSH commands to deploy
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} << 'EOF'
             # Autenticar en DockerHub desde EC2
             echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            export DOCKERHUB_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/my-app:latest
-            export AWS_REGION=us-east-1
-            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            export AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}
-            docker pull $DOCKERHUB_IMAGE
-            docker-compose down || true
-            docker-compose up -d --build
+            # Descargar la última versión de la imagen
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-app:latest
+            # Parar y eliminar cualquier contenedor previo
+            docker stop my-app || true && docker rm my-app || true
+            
+            #inicia docker-compose
+            docker-compose up -d
+            # Iniciar el contenedor
+            docker run -d --name my-app -v /mnt/efs:/app/efs -p 8080:8080 -e spring.cloud.aws.region.static=us-east-1 -e spring.cloud.aws.credentials.access-key=${{ secrets.AWS_ACCESS_KEY_ID }} -e spring.cloud.aws.credentials.secret-key=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e spring.cloud.aws.credentials.session-token=${{ secrets.AWS_SESSION_TOKEN }} ${{ secrets.DOCKERHUB_USERNAME }}/my-app:latest
           EOF
