@@ -21,7 +21,7 @@ public class FacturaController {
     }
 
     @PostMapping
-    public ResponseEntity<Factura> crearFactura(@RequestBody FacturaDto facturaDto) {
+    public ResponseEntity<String> crearFactura(@RequestBody FacturaDto facturaDto) {
         Factura factura = new Factura();
         factura.setClienteId(facturaDto.getClienteId());
         factura.setFechaEmision(facturaDto.getFechaEmision());
@@ -29,7 +29,7 @@ public class FacturaController {
         factura.setMonto(facturaDto.getMonto());
         factura.setNombreArchivo(facturaDto.getNombreArchivo());
         facturaService.crearFactura(factura);
-        return ResponseEntity.ok(factura);
+        return ResponseEntity.ok("Factura creada y enviada a la cola");
     }
 
     @GetMapping("/{id}")
@@ -41,6 +41,11 @@ public class FacturaController {
     @GetMapping("/historial/{clienteId}")
     public ResponseEntity<List<Factura>> obtenerHistorialPorCliente(@PathVariable String clienteId) {
         return ResponseEntity.ok(facturaService.obtenerHistorialCliente(clienteId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Factura>> obtenerTodasLasFacturas() {
+        return ResponseEntity.ok(facturaService.obtenerTodasLasFacturas());
     }
 
     @PutMapping("/{id}")

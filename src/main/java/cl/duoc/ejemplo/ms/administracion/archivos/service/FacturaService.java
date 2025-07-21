@@ -40,6 +40,10 @@ public class FacturaService {
         return facturaRepository.findByClienteId(clienteId);
     }
 
+    public List<Factura> obtenerTodasLasFacturas() {
+        return facturaRepository.findAll();
+    }
+
     public Factura actualizarFactura(Factura factura) {
         return facturaRepository.save(factura);
     }
