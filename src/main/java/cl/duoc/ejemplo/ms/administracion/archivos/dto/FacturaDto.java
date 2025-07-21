@@ -3,16 +3,28 @@ package cl.duoc.ejemplo.ms.administracion.archivos.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class FacturaDto {
 
     private String clienteId;
-    private LocalDate fechaEmision;
     private String descripcion;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaEmision;
+
     private BigDecimal monto;
     private String nombreArchivo;
 
     // Constructor vacío
-    public FacturaDto() {}
 
     // Getters y setters
 
