@@ -35,7 +35,7 @@ public class FacturaConsumer {
             String nombreArchivo = "factura-" + clienteId + "-" + System.currentTimeMillis() + ".pdf";
             String rutaRelativa = clienteId + "/" + fechaFolder + "/" + nombreArchivo;
 
-            Path rutaLocal = Path.of("/mnt/efs", rutaRelativa);
+                Path rutaLocal = Path.of("/efs", rutaRelativa);
             Files.createDirectories(rutaLocal.getParent());
 
 
