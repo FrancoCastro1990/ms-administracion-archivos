@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ public class Factura {
     private Long id;
 
     private String clienteId;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaEmision;
     private String descripcion;
     private BigDecimal monto;
